@@ -52,7 +52,7 @@ const onLoadList = () => {
     </template>
 
     <template #prepend>
-      <v-avatar color="grey-darken-1" size="small">
+      <v-avatar color="grey-lighten-1" size="small">
         <span class="text-body-1 font-weight-bold text-uppercase"> {{ item.by }} </span>
       </v-avatar>
     </template>

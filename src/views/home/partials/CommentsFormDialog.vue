@@ -2,8 +2,8 @@
 import { formActionDefault } from '@/utils/helpers/constants'
 import AppAlert from '@/components/common/AppAlert.vue'
 import { requiredValidator } from '@/utils/validators'
-import { useTopicsStore } from '@/stores/topics'
 import type { Comment, Topic } from '@/types/topics'
+import { useTopicsStore } from '@/stores/topics'
 import { useDisplay } from 'vuetify'
 import { ref, watch } from 'vue'
 
@@ -117,7 +117,7 @@ const onFormReset = () => {
 
           <v-btn
             prepend-icon="mdi-pencil-plus"
-            color="grey-darken-1"
+            color="grey-lighten-1"
             type="submit"
             variant="elevated"
             :disabled="formAction.formProcess"

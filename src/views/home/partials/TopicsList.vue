@@ -32,13 +32,20 @@ const {
   ></AppAlert>
 
   <v-card
-    prepend-icon="mdi-comment-multiple"
+    :prepend-icon="xs ? undefined : 'mdi-comment-multiple'"
     :title="xs ? undefined : 'Topics List'"
     :subtitle="`${topicsStore.topicsList.length} Topics`"
   >
     <template #append>
       <div class="d-flex justify-center align-center ga-3">
-        <v-btn prepend-icon="mdi-pencil-plus" variant="elevated" @click="onAdd"> Add Topic </v-btn>
+        <v-btn
+          prepend-icon="mdi-pencil-plus"
+          variant="elevated"
+          color="grey-lighten-1"
+          @click="onAdd"
+        >
+          Add Topic
+        </v-btn>
 
         <v-select
           v-model="listOptions.itemsPerPage"

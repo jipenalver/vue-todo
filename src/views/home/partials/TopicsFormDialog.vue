@@ -120,7 +120,7 @@ const onFormReset = () => {
 
           <v-btn
             prepend-icon="mdi-pencil-plus"
-            color="grey-darken-1"
+            color="grey-lighten-1"
             type="submit"
             variant="elevated"
             :disabled="formAction.formProcess"
