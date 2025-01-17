@@ -2,13 +2,12 @@
 import { formActionDefault } from '@/utils/helpers/constants'
 import AppAlert from '@/components/common/AppAlert.vue'
 import { requiredValidator } from '@/utils/validators'
-import { getRandomCode } from '@/utils/helpers/others'
 import { useTopicsStore } from '@/stores/topics'
-import type { Topic } from '@/types/topics'
+import type { Comment, Topic } from '@/types/topics'
 import { useDisplay } from 'vuetify'
 import { ref, watch } from 'vue'
 
-const props = defineProps(['isDialogVisible', 'itemData'])
+const props = defineProps(['isDialogVisible', 'itemData', 'commentData'])
 
 const emit = defineEmits(['update:isDialogVisible', 'listUpdated'])
 
@@ -18,9 +17,9 @@ const topicsStore = useTopicsStore()
 
 // Load Variables
 const formDataDefault = {
-  name: '',
-  guid: '',
-  comments: [],
+  comment: '',
+  date: '',
+  by: 'me',
 }
 const formData = ref({ ...formDataDefault })
 const formAction = ref({ ...formActionDefault })
@@ -29,10 +28,10 @@ const isUpdate = ref(false)
 
 // Monitor itemData if it has data
 watch(
-  () => props.itemData,
+  () => props.commentData,
   () => {
-    isUpdate.value = props.itemData ? true : false
-    formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
+    isUpdate.value = props.commentData ? true : false
+    formData.value = props.commentData ? { ...props.commentData } : { ...formDataDefault }
   },
 )
 
@@ -40,26 +39,24 @@ watch(
 const onSubmit = async () => {
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  // Update Topic
+  // Find Topic Index
+  const index = topicsStore.topicsList.findIndex((item: Topic) => item.guid === props.itemData.guid)
+  const comments = topicsStore.topicsList[index].comments
+
   if (isUpdate.value) {
-    const index = topicsStore.topicsList.findIndex(
-      (item: Topic) => item.guid === formData.value.guid,
-    )
-    topicsStore.topicsList[index] = { ...formData.value }
-  }
-  // Adding Topic
-  else {
-    const addData = {
-      ...formData.value,
-      guid: getRandomCode(8).toLowerCase(),
-      comments: [],
+    // Update Comment
+    const commentIndex = comments.findIndex((item: Comment) => item.date === formData.value.date)
+    if (commentIndex !== -1) {
+      comments[commentIndex] = { ...formData.value }
     }
-    topicsStore.topicsList.unshift(addData)
+  } else {
+    // Adding Comment
+    comments.push({ ...formData.value, date: new Date().toISOString() })
   }
 
   emit('listUpdated')
 
-  formAction.value.formMessage = 'Successfully Added Topic.'
+  formAction.value.formMessage = 'Successfully Added Comment.'
   formAction.value.formAlert = true
 
   // Form Reset and Close Dialog
@@ -96,14 +93,14 @@ const onFormReset = () => {
     :fullscreen="mdAndDown"
     persistent
   >
-    <v-card prepend-icon="mdi-information" title="Topic">
+    <v-card prepend-icon="mdi-comment" title="Comment">
       <v-form ref="refVForm" @submit.prevent="onFormSubmit">
         <v-card-text>
           <v-row dense>
             <v-col cols="12">
               <v-textarea
-                v-model="formData.name"
-                label="Topic"
+                v-model="formData.comment"
+                label="Comment"
                 :rules="[requiredValidator]"
                 rows="2"
               ></v-textarea>
@@ -126,7 +123,7 @@ const onFormReset = () => {
             :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
           >
-            {{ isUpdate ? 'Update Topic' : 'Add Topic' }}
+            {{ isUpdate ? 'Update Comment' : 'Add Comment' }}
           </v-btn>
         </v-card-actions>
       </v-form>

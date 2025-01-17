@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 const theme = ref('light')
 
-function onClick() {
+function onToggleTheme() {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
 }
 </script>
@@ -17,7 +17,7 @@ function onClick() {
         <v-btn
           :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
           text="Toggle Theme"
-          @click="onClick"
+          @click="onToggleTheme"
         ></v-btn>
       </v-app-bar>
 

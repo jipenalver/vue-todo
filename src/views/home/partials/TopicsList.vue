@@ -76,7 +76,11 @@ const {
             </v-list-item>
           </template>
 
-          <CommentsList :comments="item.comments" :item-data="item"></CommentsList>
+          <CommentsList
+            :comments="item.comments"
+            :item-data="item"
+            @list-updated="onLoadList"
+          ></CommentsList>
         </v-list-group>
 
         <v-divider></v-divider>
@@ -92,7 +96,6 @@ const {
   <TopicsFormDialog
     v-model:is-dialog-visible="isFormDialogVisible"
     :item-data="itemData"
-    :list-options="listOptions"
     @list-updated="onLoadList"
   ></TopicsFormDialog>
 
