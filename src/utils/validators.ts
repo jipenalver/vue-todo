@@ -104,13 +104,23 @@ export const urlValidator = (value: string) => {
   return re.test(String(value)) || 'URL is invalid'
 }
 
-// 👉 Length Validator
-export const lengthValidator = (value: string, length: number) => {
+// 👉 Length Min Validator
+export const lengthMinValidator = (value: string, length: number) => {
   if (isEmpty(value)) return true
 
   return (
     String(value).length >= length ||
     `The Min Character field must be at least ${length} characters`
+  )
+}
+
+// 👉 Length Max Validator
+export const lengthMaxValidator = (value: string, length: number) => {
+  if (isEmpty(value)) return true
+
+  return (
+    String(value).length <= length ||
+    `The Min Character field must be at maximum ${length} characters`
   )
 }
 
