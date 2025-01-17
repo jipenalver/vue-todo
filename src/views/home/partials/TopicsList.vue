@@ -94,6 +94,7 @@ const {
       </v-list>
 
       <v-pagination
+        v-model="listOptions.page"
         :length="listOptions.noOfPages"
         @update:model-value="onPageClick"
       ></v-pagination>
