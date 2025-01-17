@@ -4,7 +4,7 @@ import { watch } from 'vue'
 const props = defineProps<{
   isAlertVisible: boolean
   formMessage?: string
-  formStatus: number | undefined
+  formStatus: number
 }>()
 
 const emit = defineEmits(['update:isAlertVisible'])

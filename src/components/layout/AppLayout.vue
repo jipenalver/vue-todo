@@ -14,8 +14,6 @@ function onClick() {
       <v-app-bar class="px-3">
         <v-app-bar-title> <h3>Vue Todo</h3> </v-app-bar-title>
 
-        <v-spacer></v-spacer>
-
         <v-btn
           :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
           text="Toggle Theme"
