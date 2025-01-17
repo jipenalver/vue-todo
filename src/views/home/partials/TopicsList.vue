@@ -1,64 +1,80 @@
 <script setup lang="ts">
-const items = [
-  {
-    title: 'Brunch this weekend?',
-    subtitle: `<span class="text-primary">Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?`,
-  },
-  {
-    title: 'Summer BBQ',
-    subtitle: `<span class="text-primary">to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend.`,
-  },
-  {
-    title: 'Oui oui',
-    subtitle:
-      '<span class="text-primary">Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?',
-  },
-  {
-    title: 'Birthday gift',
-    subtitle:
-      '<span class="text-primary">Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?',
-  },
-  {
-    title: 'Recipe to try',
-    subtitle:
-      '<span class="text-primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.',
-  },
-]
+import { useTopicsList } from '@/composables/home/topicsList'
 
-const cruds = [
-  ['Create', 'mdi-plus-outline'],
-  ['Read', 'mdi-file-outline'],
-  ['Update', 'mdi-update'],
-  ['Delete', 'mdi-delete'],
-]
+const { vueDate, listOptions, listData, onPageClick, onPerPageChange } = useTopicsList()
 </script>
 
 <template>
-  <v-list v-for="item in items" :key="item.title">
-    <v-list-group value="Actions">
-      <template #activator="{ props }">
-        <v-list-item v-bind="props" :title="item.title" lines="three">
-          <template #subtitle> <div v-html="item.subtitle"></div> </template>
+  <v-card>
+    <template #append>
+      <v-select
+        v-model="listOptions.itemsPerPage"
+        width="100px"
+        variant="outlined"
+        label="Select"
+        :items="[5, 10, 20, 50]"
+        @update:model-value="onPerPageChange"
+      ></v-select>
+    </template>
 
-          <v-list-item-action class="mt-3">
-            <v-btn variant="text" density="compact" icon>
-              <v-icon icon="mdi-pencil"></v-icon>
-            </v-btn>
+    <v-card-text>
+      <v-list v-for="{ name, guid, comments } in listData" :key="guid">
+        <v-list-group value="Actions">
+          <template #activator="{ props }">
+            <v-list-item v-bind="props" :title="name" :subtitle="guid" lines="three">
+              <template #title>
+                <div class="text-wrap">{{ name }}</div>
+              </template>
 
-            <v-btn variant="text" density="compact" icon>
-              <v-icon icon="mdi-trash-can"></v-icon>
-            </v-btn>
-          </v-list-item-action>
-        </v-list-item>
-      </template>
+              <template #append>
+                <v-btn variant="text" density="compact" icon>
+                  <v-icon icon="mdi-pencil"></v-icon>
+                </v-btn>
 
-      <v-list-item
-        v-for="([title, icon], i) in cruds"
-        :key="i"
-        :prepend-icon="icon"
-        :title="title"
-        :value="title"
-      ></v-list-item>
-    </v-list-group>
-  </v-list>
+                <v-btn variant="text" density="compact" icon>
+                  <v-icon icon="mdi-trash-can"></v-icon>
+                </v-btn>
+              </template>
+            </v-list-item>
+          </template>
+
+          <v-list-item
+            v-for="({ comment, date, by }, i) in comments"
+            :key="i"
+            :subtitle="vueDate.format(date, 'fullDateTime')"
+            lines="two"
+          >
+            <template #title>
+              <div class="text-wrap">
+                {{ comment }}
+              </div>
+            </template>
+
+            <template #prepend>
+              <v-avatar color="grey-darken-1" size="small">
+                <span class="text-body-1 font-weight-bold text-uppercase"> {{ by }} </span>
+              </v-avatar>
+            </template>
+
+            <template #append>
+              <v-btn variant="text" density="compact" icon>
+                <v-icon icon="mdi-pencil"></v-icon>
+              </v-btn>
+
+              <v-btn variant="text" density="compact" icon>
+                <v-icon icon="mdi-trash-can"></v-icon>
+              </v-btn>
+            </template>
+          </v-list-item>
+        </v-list-group>
+
+        <v-divider></v-divider>
+      </v-list>
+
+      <v-pagination
+        :length="listOptions.noOfPages"
+        @update:model-value="onPageClick"
+      ></v-pagination>
+    </v-card-text>
+  </v-card>
 </template>
