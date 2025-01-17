@@ -12,7 +12,6 @@ const props = defineProps(['isDialogVisible', 'itemData', 'listOptions'])
 
 const emit = defineEmits(['update:isDialogVisible', 'listUpdated'])
 
-// Utilize pre-defined vue functions
 const { mdAndDown } = useDisplay()
 
 const topicsStore = useTopicsStore()
@@ -39,7 +38,6 @@ watch(
 
 // Submit Functionality
 const onSubmit = async () => {
-  // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
   // Update Topic
@@ -50,7 +48,14 @@ const onSubmit = async () => {
     topicsStore.topicsList[index] = { ...formData.value }
   }
   // Adding Topic
-  else topicsStore.topicsList.unshift({ ...formData.value, guid: getRandomCode(8), comments: [] })
+  else {
+    const addData = {
+      ...formData.value,
+      guid: getRandomCode(8).toLowerCase(),
+      comments: [],
+    }
+    topicsStore.topicsList.unshift(addData)
+  }
 
   emit('listUpdated')
 
@@ -69,6 +74,7 @@ const onFormSubmit = () => {
     if (valid) onSubmit()
   })
 }
+
 // Form Reset
 const onFormReset = () => {
   formAction.value = { ...formActionDefault }

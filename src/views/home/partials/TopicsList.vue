@@ -4,17 +4,18 @@ import { useTopicsAction } from '@/composables/home/topicsAction'
 import { useTopicsList } from '@/composables/home/topicsList'
 import AppAlert from '@/components/common/AppAlert.vue'
 import TopicsFormDialog from './TopicsFormDialog.vue'
+import CommentsList from './CommentsList.vue'
 import { useDisplay } from 'vuetify'
 
 const { xs } = useDisplay()
 
-const { vueDate, topicsStore, listOptions, listData, onPageClick, onPerPageChange, onLoadList } =
+const { topicsStore, listOptions, listData, onPageClick, onPerPageChange, onLoadList } =
   useTopicsList()
 
 const {
   formAction,
   isFormDialogVisible,
-  isConfirmDeleteDialog,
+  isConfirmDelete,
   itemData,
   onAdd,
   onUpdate,
@@ -75,34 +76,7 @@ const {
             </v-list-item>
           </template>
 
-          <v-list-item
-            v-for="({ comment, date, by }, i) in item.comments"
-            :key="i"
-            :subtitle="vueDate.format(date, 'fullDateTime')"
-            lines="two"
-          >
-            <template #title>
-              <div class="text-wrap">
-                {{ comment }}
-              </div>
-            </template>
-
-            <template #prepend>
-              <v-avatar color="grey-darken-1" size="small">
-                <span class="text-body-1 font-weight-bold text-uppercase"> {{ by }} </span>
-              </v-avatar>
-            </template>
-
-            <v-list-item-action class="mt-3 d-flex flex-wrap ga-1">
-              <v-btn size="small" variant="text" density="compact" icon>
-                <v-icon icon="mdi-pencil"></v-icon>
-              </v-btn>
-
-              <v-btn size="small" variant="text" density="compact" icon>
-                <v-icon icon="mdi-trash-can"></v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
+          <CommentsList :comments="item.comments" :item-data="item"></CommentsList>
         </v-list-group>
 
         <v-divider></v-divider>
@@ -123,7 +97,7 @@ const {
   ></TopicsFormDialog>
 
   <ConfirmDialog
-    v-model:is-dialog-visible="isConfirmDeleteDialog"
+    v-model:is-dialog-visible="isConfirmDelete"
     title="Confirm Delete"
     text="Are you sure you want to delete topic?"
     @confirm="onConfirmDelete"

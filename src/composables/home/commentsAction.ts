@@ -1,16 +1,16 @@
 import { formActionDefault } from '@/utils/helpers/constants'
 import { useTopicsStore } from '@/stores/topics'
-import type { Topic } from '@/types/topics'
+import type { Comment } from '@/types/topics'
 import { ref } from 'vue'
 
 // by convention, composable function names start with "use"
-export function useTopicsAction(onLoadList: () => void) {
+export function useCommentsAction(onLoadList: () => void) {
   const topicsStore = useTopicsStore()
 
   const formAction = ref({ ...formActionDefault })
   const isFormDialogVisible = ref(false)
   const isConfirmDelete = ref(false)
-  const itemData = ref<Topic | null>(null)
+  const itemData = ref<Comment | null>(null)
   const deleteId = ref<string>('')
 
   const onAdd = () => {
@@ -18,7 +18,7 @@ export function useTopicsAction(onLoadList: () => void) {
     isFormDialogVisible.value = true
   }
 
-  const onUpdate = (item: Topic) => {
+  const onUpdate = (item: Comment) => {
     itemData.value = item
     isFormDialogVisible.value = true
   }
@@ -31,9 +31,12 @@ export function useTopicsAction(onLoadList: () => void) {
   const onConfirmDelete = async () => {
     formAction.value = { ...formActionDefault, formProcess: true }
 
-    topicsStore.topicsList = topicsStore.topicsList.filter((item) => item.guid !== deleteId.value)
+    topicsStore.topicsList = topicsStore.topicsList.map((item) => {
+      item.comments = item.comments.filter((comment) => comment.date !== deleteId.value)
+      return item
+    })
 
-    formAction.value.formMessage = 'Successfully Deleted Topic.'
+    formAction.value.formMessage = 'Successfully Deleted Comment.'
     formAction.value.formAlert = true
 
     onLoadList()

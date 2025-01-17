@@ -1,12 +1,9 @@
 import { useTopicsStore } from '@/stores/topics'
 import type { Topic } from '@/types/topics'
 import { onMounted, ref } from 'vue'
-import { useDate } from 'vuetify'
 
 // by convention, composable function names start with "use"
 export function useTopicsList() {
-  const vueDate = useDate()
-
   const topicsStore = useTopicsStore()
 
   const listOptions = ref({
@@ -51,5 +48,5 @@ export function useTopicsList() {
   })
 
   // expose managed state as return value
-  return { vueDate, topicsStore, listOptions, listData, onPageClick, onPerPageChange, onLoadList }
+  return { topicsStore, listOptions, listData, onPageClick, onPerPageChange, onLoadList }
 }
