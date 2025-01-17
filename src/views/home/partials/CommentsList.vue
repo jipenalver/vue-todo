@@ -5,7 +5,7 @@ import CommentsFormDialog from './CommentsFormDialog.vue'
 import AppAlert from '@/components/common/AppAlert.vue'
 import { useDate } from 'vuetify'
 
-const props = defineProps(['comments', 'itemData'])
+const props = defineProps(['comments', 'itemData', 'listOptions'])
 
 const emit = defineEmits(['listUpdated'])
 
@@ -24,11 +24,11 @@ const {
 
 const emitConfirmDelete = () => {
   onConfirmDelete()
-  emit('listUpdated')
+  emit('listUpdated', props.listOptions.page)
 }
 
-const onLoadList = () => {
-  emit('listUpdated')
+const emitLoadList = () => {
+  emit('listUpdated', props.listOptions.page)
 }
 </script>
 
@@ -78,7 +78,8 @@ const onLoadList = () => {
     v-model:is-dialog-visible="isFormDialogVisible"
     :item-data="props.itemData"
     :comment-data="commentData"
-    @list-updated="onLoadList"
+    :list-options="props.listOptions"
+    @list-updated="emitLoadList"
   ></CommentsFormDialog>
 
   <ConfirmDialog

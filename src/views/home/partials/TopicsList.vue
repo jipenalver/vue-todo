@@ -21,7 +21,17 @@ const {
   onUpdate,
   onDelete,
   onConfirmDelete,
-} = useTopicsAction(onLoadList)
+} = useTopicsAction()
+
+const doConfirmDelete = () => {
+  onConfirmDelete()
+  onLoadList(listOptions.value.page)
+}
+
+const doLoadList = (page: number) => {
+  listOptions.value.page = page
+  onLoadList(page)
+}
 </script>
 
 <template>
@@ -86,7 +96,8 @@ const {
           <CommentsList
             :comments="item.comments"
             :item-data="item"
-            @list-updated="onLoadList"
+            :list-options="listOptions"
+            @list-updated="doLoadList"
           ></CommentsList>
         </v-list-group>
 
@@ -104,13 +115,14 @@ const {
   <TopicsFormDialog
     v-model:is-dialog-visible="isFormDialogVisible"
     :item-data="itemData"
-    @list-updated="onLoadList"
+    :list-options="listOptions"
+    @list-updated="doLoadList"
   ></TopicsFormDialog>
 
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDelete"
     title="Confirm Delete"
     text="Are you sure you want to delete topic?"
-    @confirm="onConfirmDelete"
+    @confirm="doConfirmDelete"
   ></ConfirmDialog>
 </template>

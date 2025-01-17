@@ -8,7 +8,7 @@ import type { Topic } from '@/types/topics'
 import { useDisplay } from 'vuetify'
 import { ref, watch } from 'vue'
 
-const props = defineProps(['isDialogVisible', 'itemData'])
+const props = defineProps(['isDialogVisible', 'itemData', 'listOptions'])
 
 const emit = defineEmits(['update:isDialogVisible', 'listUpdated'])
 
@@ -46,6 +46,9 @@ const onSubmit = async () => {
       (item: Topic) => item.guid === formData.value.guid,
     )
     topicsStore.topicsList[index] = { ...formData.value }
+
+    emit('listUpdated', props.listOptions.page)
+    formAction.value.formMessage = 'Successfully Updated Topic.'
   }
   // Adding Topic
   else {
@@ -55,11 +58,11 @@ const onSubmit = async () => {
       comments: [],
     }
     topicsStore.topicsList.unshift(addData)
+
+    emit('listUpdated', 1)
+    formAction.value.formMessage = 'Successfully Added Topic.'
   }
 
-  emit('listUpdated')
-
-  formAction.value.formMessage = 'Successfully Added Topic.'
   formAction.value.formAlert = true
 
   // Form Reset and Close Dialog

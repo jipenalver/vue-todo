@@ -8,7 +8,7 @@ import { useTopicsStore } from '@/stores/topics'
 import { useDisplay } from 'vuetify'
 import { ref, watch } from 'vue'
 
-const props = defineProps(['isDialogVisible', 'itemData', 'commentData'])
+const props = defineProps(['isDialogVisible', 'itemData', 'commentData', 'listOptions'])
 
 const emit = defineEmits(['update:isDialogVisible', 'listUpdated'])
 
@@ -65,6 +65,8 @@ const onSubmit = async () => {
     if (commentIndex !== -1) {
       comments[commentIndex] = { ...formData.value }
     }
+
+    formAction.value.formMessage = 'Successfully Updated Comment.'
   } else {
     const { first, last, email, ...commentData } = formData.value
     // Adding Comment
@@ -82,11 +84,11 @@ const onSubmit = async () => {
       guid: getAvatarText(first + ' ' + last).toLowerCase(),
     }
     topicsStore.personsList.push(person)
+
+    formAction.value.formMessage = 'Successfully Added Comment.'
   }
 
-  emit('listUpdated')
-
-  formAction.value.formMessage = 'Successfully Added Comment.'
+  emit('listUpdated', props.listOptions.page)
   formAction.value.formAlert = true
 
   // Form Reset and Close Dialog

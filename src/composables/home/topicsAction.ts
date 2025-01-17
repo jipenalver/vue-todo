@@ -4,7 +4,7 @@ import type { Topic } from '@/types/topics'
 import { ref } from 'vue'
 
 // by convention, composable function names start with "use"
-export function useTopicsAction(onLoadList: () => void) {
+export function useTopicsAction() {
   const topicsStore = useTopicsStore()
 
   const formAction = ref({ ...formActionDefault })
@@ -35,8 +35,6 @@ export function useTopicsAction(onLoadList: () => void) {
 
     formAction.value.formMessage = 'Successfully Deleted Topic.'
     formAction.value.formAlert = true
-
-    onLoadList()
   }
 
   // expose managed state as return value
