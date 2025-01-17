@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/components/layout/AppLayout.vue'
+import TopicsList from './partials/TopicsList.vue'
 </script>
 
 <template>
@@ -11,6 +12,12 @@ import AppLayout from '@/components/layout/AppLayout.vue'
             <h1 class="text-center mt-5">Vue Todo App</h1>
 
             <v-divider thickness="2" class="my-5"></v-divider>
+
+            <v-card>
+              <v-card-text>
+                <TopicsList></TopicsList>
+              </v-card-text>
+            </v-card>
           </v-col>
         </v-row>
       </v-container>
