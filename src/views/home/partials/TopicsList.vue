@@ -8,7 +8,9 @@ import { useDisplay } from 'vuetify'
 
 const { xs } = useDisplay()
 
-const { vueDate, listOptions, listData, onPageClick, onPerPageChange } = useTopicsList()
+const { vueDate, topicsStore, listOptions, listData, onPageClick, onPerPageChange, onLoadList } =
+  useTopicsList()
+
 const {
   formAction,
   isFormDialogVisible,
@@ -18,7 +20,7 @@ const {
   onUpdate,
   onDelete,
   onConfirmDelete,
-} = useTopicsAction()
+} = useTopicsAction(onLoadList)
 </script>
 
 <template>
@@ -28,7 +30,11 @@ const {
     :form-status="formAction.formStatus"
   ></AppAlert>
 
-  <v-card prepend-icon="mdi-comment-multiple" :title="xs ? undefined : 'Topics List'">
+  <v-card
+    prepend-icon="mdi-comment-multiple"
+    :title="xs ? undefined : 'Topics List'"
+    :subtitle="`${topicsStore.topicsList.length} Topics`"
+  >
     <template #append>
       <div class="d-flex justify-center align-center ga-3">
         <v-btn prepend-icon="mdi-pencil-plus" variant="elevated" @click="onAdd"> Add Topic </v-btn>
@@ -113,6 +119,7 @@ const {
     v-model:is-dialog-visible="isFormDialogVisible"
     :item-data="itemData"
     :list-options="listOptions"
+    @list-updated="onLoadList"
   ></TopicsFormDialog>
 
   <ConfirmDialog

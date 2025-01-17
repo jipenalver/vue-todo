@@ -36,16 +36,20 @@ export function useTopicsList() {
     listData.value = topicsStore.topicsList.slice(0, value)
   }
 
-  onMounted(async () => {
-    if (topicsStore.topicsList.length === 0) await topicsStore.getTopics()
-
+  const onLoadList = () => {
     listData.value = topicsStore.topicsList.slice(0, listOptions.value.itemsPerPage)
 
     listOptions.value.noOfPages = Math.ceil(
       topicsStore.topicsList.length / listOptions.value.itemsPerPage,
     )
+  }
+
+  onMounted(async () => {
+    if (topicsStore.topicsList.length === 0) await topicsStore.getTopics()
+
+    onLoadList()
   })
 
   // expose managed state as return value
-  return { vueDate, listOptions, listData, onPageClick, onPerPageChange }
+  return { vueDate, topicsStore, listOptions, listData, onPageClick, onPerPageChange, onLoadList }
 }

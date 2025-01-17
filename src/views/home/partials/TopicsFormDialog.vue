@@ -2,19 +2,26 @@
 import { formActionDefault } from '@/utils/helpers/constants'
 import AppAlert from '@/components/common/AppAlert.vue'
 import { requiredValidator } from '@/utils/validators'
+import { getRandomCode } from '@/utils/helpers/others'
+import { useTopicsStore } from '@/stores/topics'
+import type { Topic } from '@/types/topics'
 import { useDisplay } from 'vuetify'
 import { ref, watch } from 'vue'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'listOptions'])
 
-const emit = defineEmits(['update:isDialogVisible'])
+const emit = defineEmits(['update:isDialogVisible', 'listUpdated'])
 
 // Utilize pre-defined vue functions
 const { mdAndDown } = useDisplay()
 
+const topicsStore = useTopicsStore()
+
 // Load Variables
 const formDataDefault = {
   name: '',
+  guid: '',
+  comments: [],
 }
 const formData = ref({ ...formDataDefault })
 const formAction = ref({ ...formActionDefault })
@@ -35,32 +42,25 @@ const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  // // Check if isUpdate is true, then do update, if false do add
-  // const { data, error } = isUpdate.value
-  //   ? await branchesStore.updateBranch(formData.value)
-  //   : await branchesStore.addBranch(formData.value)
+  // Update Topic
+  if (isUpdate.value) {
+    const index = topicsStore.topicsList.findIndex(
+      (item: Topic) => item.guid === formData.value.guid,
+    )
+    topicsStore.topicsList[index] = { ...formData.value }
+  }
+  // Adding Topic
+  else topicsStore.topicsList.unshift({ ...formData.value, guid: getRandomCode(8), comments: [] })
 
-  // if (error) {
-  //   // Add Error Message and Status Code
-  //   formAction.value.formErrorMessage = error.message
-  //   formAction.value.formStatus = error.status
+  emit('listUpdated')
 
-  //   // Turn off processing
-  //   formAction.value.formProcess = false
-  // } else if (data) {
-  //   // Add Success Message
-  //   formAction.value.formSuccessMessage = isUpdate.value
-  //     ? 'Successfully Updated Branch Information.'
-  //     : 'Successfully Added Branch.'
-
-  //   await branchesStore.getBranchesTable(props.tableOptions, props.tableFilters)
-  //   await branchesStore.getBranches()
+  formAction.value.formMessage = 'Successfully Added Topic.'
+  formAction.value.formAlert = true
 
   // Form Reset and Close Dialog
-  //   setTimeout(() => {
-  //     onFormReset()
-  //   }, 2500)
-  // }
+  setTimeout(() => {
+    onFormReset()
+  }, 1000)
 }
 
 // Trigger Validators

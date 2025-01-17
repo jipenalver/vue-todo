@@ -1,9 +1,12 @@
 import { formActionDefault } from '@/utils/helpers/constants'
+import { useTopicsStore } from '@/stores/topics'
 import type { Topic } from '@/types/topics'
 import { ref } from 'vue'
 
 // by convention, composable function names start with "use"
-export function useTopicsAction() {
+export function useTopicsAction(onLoadList: () => void) {
+  const topicsStore = useTopicsStore()
+
   const formAction = ref({ ...formActionDefault })
   const isFormDialogVisible = ref(false)
   const isConfirmDeleteDialog = ref(false)
@@ -16,8 +19,10 @@ export function useTopicsAction() {
   }
 
   const onUpdate = (item: Topic) => {
+    console.log(item)
     itemData.value = item
     isFormDialogVisible.value = true
+    console.log(itemData.value)
   }
 
   const onDelete = (id: string) => {
@@ -28,20 +33,12 @@ export function useTopicsAction() {
   const onConfirmDelete = async () => {
     formAction.value = { ...formActionDefault, formProcess: true }
 
-    // const { error } = await userRolesStore.deleteUserRole(deleteId.value ?? 0)
+    topicsStore.topicsList = topicsStore.topicsList.filter((item) => item.guid !== deleteId.value)
 
-    // formAction.value.formProcess = false
+    formAction.value.formMessage = 'Successfully Deleted Topic.'
+    formAction.value.formAlert = true
 
-    // if (error) {
-    //   formAction.value.formMessage = error.message
-    //   formAction.value.formStatus = 400
-    //   formAction.value.formAlert = true
-    //   return
-    // }
-
-    // formAction.value.formMessage = 'Successfully Deleted User Role.'
-    // formAction.value.formAlert = true
-    // await userRolesStore.getUserRoles()
+    onLoadList()
   }
 
   // expose managed state as return value
