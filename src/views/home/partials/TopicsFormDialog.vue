@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { lengthMaxValidator, requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/helpers/constants'
 import AppAlert from '@/components/common/AppAlert.vue'
-import { requiredValidator } from '@/utils/validators'
 import { getRandomCode } from '@/utils/helpers/others'
 import { useTopicsStore } from '@/stores/topics'
 import type { Topic } from '@/types/topics'
@@ -104,7 +104,7 @@ const onFormReset = () => {
               <v-textarea
                 v-model="formData.name"
                 label="Topic"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, lengthMaxValidator(formData.name, 50)]"
                 rows="2"
               ></v-textarea>
             </v-col>

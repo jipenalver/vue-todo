@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { emailValidator, requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/helpers/constants'
 import AppAlert from '@/components/common/AppAlert.vue'
-import { requiredValidator } from '@/utils/validators'
+import { getAvatarText } from '@/utils/helpers/others'
 import type { Comment, Topic } from '@/types/topics'
 import { useTopicsStore } from '@/stores/topics'
 import { useDisplay } from 'vuetify'
@@ -19,19 +20,34 @@ const topicsStore = useTopicsStore()
 const formDataDefault = {
   comment: '',
   date: '',
-  by: 'me',
+  by: '',
 }
-const formData = ref({ ...formDataDefault })
+const personDataDefault = {
+  first: '',
+  last: '',
+  guid: '',
+  email: '',
+}
+const formData = ref({ ...formDataDefault, ...personDataDefault })
 const formAction = ref({ ...formActionDefault })
 const refVForm = ref()
 const isUpdate = ref(false)
+const fullname = ref('')
 
 // Monitor itemData if it has data
 watch(
   () => props.commentData,
   () => {
     isUpdate.value = props.commentData ? true : false
-    formData.value = props.commentData ? { ...props.commentData } : { ...formDataDefault }
+    formData.value = props.commentData
+      ? { ...props.commentData }
+      : { ...formDataDefault, ...personDataDefault }
+
+    // Set Fullname of Commenter
+    if (isUpdate.value) {
+      const person = topicsStore.personsList.find((item) => item.guid === props.commentData.by)
+      fullname.value = (person?.first || '') + ' ' + (person?.last || '')
+    }
   },
 )
 
@@ -50,8 +66,22 @@ const onSubmit = async () => {
       comments[commentIndex] = { ...formData.value }
     }
   } else {
+    const { first, last, email, ...commentData } = formData.value
     // Adding Comment
-    comments.push({ ...formData.value, date: new Date().toISOString() })
+    comments.push({
+      ...commentData,
+      date: new Date().toISOString(),
+      by: getAvatarText(first + ' ' + last).toLowerCase(),
+    })
+
+    // Add Person
+    const person = {
+      first,
+      last,
+      email,
+      guid: getAvatarText(first + ' ' + last).toLowerCase(),
+    }
+    topicsStore.personsList.push(person)
   }
 
   emit('listUpdated')
@@ -75,7 +105,7 @@ const onFormSubmit = () => {
 // Form Reset
 const onFormReset = () => {
   formAction.value = { ...formActionDefault }
-  formData.value = { ...formDataDefault }
+  formData.value = { ...formDataDefault, ...personDataDefault }
   emit('update:isDialogVisible', false)
 }
 </script>
@@ -93,7 +123,7 @@ const onFormReset = () => {
     :fullscreen="mdAndDown"
     persistent
   >
-    <v-card prepend-icon="mdi-comment" title="Comment">
+    <v-card prepend-icon="mdi-comment" title="Comment" :subtitle="isUpdate ? fullname : undefined">
       <v-form ref="refVForm" @submit.prevent="onFormSubmit">
         <v-card-text>
           <v-row dense>
@@ -105,6 +135,33 @@ const onFormReset = () => {
                 rows="2"
               ></v-textarea>
             </v-col>
+
+            <template v-if="!isUpdate">
+              <v-col cols="12">
+                <v-text-field
+                  v-model="formData.first"
+                  label="First"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12">
+                <v-text-field
+                  v-model="formData.last"
+                  label="Last"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12">
+                <v-text-field
+                  prepend-inner-icon="mdi-email"
+                  v-model="formData.email"
+                  label="Email"
+                  :rules="[requiredValidator, emailValidator]"
+                ></v-text-field>
+              </v-col>
+            </template>
           </v-row>
         </v-card-text>
 
