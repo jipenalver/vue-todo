@@ -117,7 +117,6 @@ export function useCommentsForm(
 
   // expose managed state as return value
   return {
-    topicsStore,
     formData,
     formAction,
     refVForm,

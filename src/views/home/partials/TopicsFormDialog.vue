@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import { lengthMaxValidator, requiredValidator } from '@/utils/validators'
-import { formActionDefault } from '@/utils/helpers/constants'
+import { useTopicsForm } from '@/composables/home/topicsForm'
 import AppAlert from '@/components/common/AppAlert.vue'
-import { getRandomCode } from '@/utils/helpers/others'
-import { useTopicsStore } from '@/stores/topics'
-import type { Topic } from '@/types/topics'
 import { useDisplay } from 'vuetify'
-import { ref, watch } from 'vue'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'listOptions'])
 
@@ -14,76 +10,10 @@ const emit = defineEmits(['update:isDialogVisible', 'listUpdated'])
 
 const { mdAndDown } = useDisplay()
 
-const topicsStore = useTopicsStore()
-
-// Load Variables
-const formDataDefault = {
-  name: '',
-  guid: '',
-  comments: [],
-}
-const formData = ref({ ...formDataDefault })
-const formAction = ref({ ...formActionDefault })
-const refVForm = ref()
-const isUpdate = ref(false)
-
-// Monitor itemData if it has data
-watch(
-  () => props.itemData,
-  () => {
-    isUpdate.value = props.itemData ? true : false
-    formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
-  },
+const { formData, formAction, refVForm, isUpdate, onFormSubmit, onFormReset } = useTopicsForm(
+  props,
+  emit,
 )
-
-// Submit Functionality
-const onSubmit = async () => {
-  formAction.value = { ...formActionDefault, formProcess: true }
-
-  // Update Topic
-  if (isUpdate.value) {
-    const index = topicsStore.topicsList.findIndex(
-      (item: Topic) => item.guid === formData.value.guid,
-    )
-    topicsStore.topicsList[index] = { ...formData.value }
-
-    emit('listUpdated', props.listOptions.page)
-    formAction.value.formMessage = 'Successfully Updated Topic.'
-  }
-  // Adding Topic
-  else {
-    const addData = {
-      ...formData.value,
-      guid: getRandomCode(8).toLowerCase(),
-      comments: [],
-    }
-    topicsStore.topicsList.unshift(addData)
-
-    emit('listUpdated', 1)
-    formAction.value.formMessage = 'Successfully Added Topic.'
-  }
-
-  formAction.value.formAlert = true
-
-  // Form Reset and Close Dialog
-  setTimeout(() => {
-    onFormReset()
-  }, 1000)
-}
-
-// Trigger Validators
-const onFormSubmit = () => {
-  refVForm.value?.validate().then(({ valid }: { valid: boolean }) => {
-    if (valid) onSubmit()
-  })
-}
-
-// Form Reset
-const onFormReset = () => {
-  formAction.value = { ...formActionDefault }
-  formData.value = { ...formDataDefault }
-  emit('update:isDialogVisible', false)
-}
 </script>
 
 <template>
