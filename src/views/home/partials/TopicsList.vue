@@ -95,7 +95,7 @@ const doLoadList = (page: number) => {
 
           <CommentsList
             :comments="item.comments"
-            :item-data="item"
+            :topic-data="item"
             :list-options="listOptions"
             @list-updated="doLoadList"
           ></CommentsList>

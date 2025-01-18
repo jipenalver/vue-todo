@@ -5,7 +5,7 @@ import CommentsFormDialog from './CommentsFormDialog.vue'
 import AppAlert from '@/components/common/AppAlert.vue'
 import { useDate } from 'vuetify'
 
-const props = defineProps(['comments', 'itemData', 'listOptions'])
+const props = defineProps(['comments', 'topicData', 'listOptions'])
 
 const emit = defineEmits(['listUpdated'])
 
@@ -76,7 +76,7 @@ const emitLoadList = () => {
 
   <CommentsFormDialog
     v-model:is-dialog-visible="isFormDialogVisible"
-    :item-data="props.itemData"
+    :topic-data="props.topicData"
     :comment-data="commentData"
     :list-options="props.listOptions"
     @list-updated="emitLoadList"
