@@ -39,7 +39,7 @@ export function useCommentsForm(
   watch(
     () => props.isDialogVisible,
     () => {
-      isUpdate.value = props.commentData ? true : false
+      isUpdate.value = !!props.commentData
       formData.value = props.commentData
         ? { ...defaultData, ...props.commentData }
         : { ...defaultData }
@@ -63,27 +63,22 @@ export function useCommentsForm(
     if (isUpdate.value) {
       // Update Comment
       const commentIndex = comments.findIndex((item: Comment) => item.date === formData.value.date)
-      if (commentIndex !== -1) {
-        comments[commentIndex] = { ...formData.value }
-      }
+      if (commentIndex !== -1) comments[commentIndex] = { ...formData.value }
 
       formAction.value.formMessage = 'Successfully Updated Comment.'
     } else {
       const { first, last, email, ...commentData } = formData.value
+      const guid = getAvatarText(first + ' ' + last).toLowerCase()
+
       // Adding Comment
       comments.push({
         ...commentData,
         date: new Date().toISOString(),
-        by: getAvatarText(first + ' ' + last).toLowerCase(),
+        by: guid,
       })
 
       // Add Person
-      const person = {
-        first,
-        last,
-        email,
-        guid: getAvatarText(first + ' ' + last).toLowerCase(),
-      }
+      const person = { first, last, email, guid }
       topicsStore.personsList.push(person)
 
       formAction.value.formMessage = 'Successfully Added Comment.'
