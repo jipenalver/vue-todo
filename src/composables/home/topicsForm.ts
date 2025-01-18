@@ -11,7 +11,7 @@ export function useTopicsForm(
     itemData?: Topic
     listOptions?: { page: number; itemsPerPage: number }
   },
-  emit: (event: 'update:isDialogVisible' | 'listUpdated', ...args: boolean[] | number[]) => void,
+  emit: (event: 'update:isDialogVisible' | 'listUpdated', value: boolean | number) => void,
 ) {
   const topicsStore = useTopicsStore()
 
@@ -28,11 +28,12 @@ export function useTopicsForm(
 
   // Monitor itemData if it has data
   watch(
-    () => props.itemData,
+    () => props.isDialogVisible,
     () => {
-      isUpdate.value = props.itemData ? true : false
+      isUpdate.value = !!props.itemData
       formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
     },
+    { immediate: true },
   )
 
   // Submit Functionality

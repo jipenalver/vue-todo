@@ -12,7 +12,7 @@ export function useCommentsForm(
     commentData?: Comment
     listOptions?: { page: number; itemsPerPage: number }
   },
-  emit: (event: 'update:isDialogVisible' | 'listUpdated', ...args: boolean[] | number[]) => void,
+  emit: (event: 'update:isDialogVisible' | 'listUpdated', value: boolean | number) => void,
 ) {
   const topicsStore = useTopicsStore()
 
@@ -37,19 +37,16 @@ export function useCommentsForm(
 
   // Monitor itemData if it has data
   watch(
-    () => props.commentData,
+    () => props.isDialogVisible,
     () => {
       isUpdate.value = props.commentData ? true : false
-
       formData.value = props.commentData
         ? { ...defaultData, ...props.commentData }
         : { ...defaultData }
 
       // Set Fullname of Commenter
-      if (isUpdate.value) {
-        const person = topicsStore.personsList.find((item) => item.guid === props.commentData?.by)
-        fullname.value = (person?.first || '') + ' ' + (person?.last || '')
-      }
+      const person = topicsStore.personsList.find((item) => item.guid === props.commentData?.by)
+      fullname.value = (person?.first || '') + ' ' + (person?.last || '')
     },
   )
 
