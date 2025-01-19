@@ -1,8 +1,13 @@
 // 👉 IsEmpty
-export const isEmpty = (value: null | undefined | string) => {
+export const isEmpty = (value: unknown) => {
+  // Null, undefined, or empty string
   if (value === null || value === undefined || value === '') return true
 
-  return !!(Array.isArray(value) && value.length === 0)
+  // Check for strings (non-empty strings are not empty)
+  if (typeof value === 'string') return value.trim() === ''
+
+  // For all other types, return false
+  return false
 }
 
 // 👉 IsNullOrUndefined
@@ -28,7 +33,7 @@ export const requiredValidator = (value: unknown) => {
 }
 
 // 👉 Email Validator
-export const emailValidator = (value: string) => {
+export const emailValidator = (value: unknown) => {
   if (isEmpty(value)) return true
 
   const re =
@@ -57,7 +62,7 @@ export const confirmedValidator = (value: string, target: string) =>
   value === target || 'The Confirm Password field confirmation does not match'
 
 // 👉 Between Validator
-export const betweenValidator = (value: string, min: number, max: number) => {
+export const betweenValidator = (value: unknown, min: number, max: number) => {
   const valueAsNumber = Number(value)
 
   return (
@@ -67,7 +72,7 @@ export const betweenValidator = (value: string, min: number, max: number) => {
 }
 
 // 👉 Integer Validator
-export const integerValidator = (value: string) => {
+export const integerValidator = (value: unknown) => {
   if (isEmpty(value)) return true
 
   if (Array.isArray(value))
@@ -89,14 +94,14 @@ export const regexValidator = (value: string, regex: RegExp): string | boolean =
 }
 
 // 👉 Alpha Validator
-export const alphaValidator = (value: string) => {
+export const alphaValidator = (value: unknown) => {
   if (isEmpty(value)) return true
 
   return /^[A-Z]*$/i.test(String(value)) || 'The Alpha field may only contain alphabetic characters'
 }
 
 // 👉 URL Validator
-export const urlValidator = (value: string) => {
+export const urlValidator = (value: unknown) => {
   if (isEmpty(value)) return true
 
   const re = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}[.]{0,1}/
@@ -125,7 +130,7 @@ export const lengthMaxValidator = (value: string, length: number) => {
 }
 
 // 👉 Alpha-dash Validator
-export const alphaDashValidator = (value: string) => {
+export const alphaDashValidator = (value: unknown) => {
   if (isEmpty(value)) return true
 
   const valueAsString = String(value)
@@ -138,7 +143,50 @@ export const alphaDashValidator = (value: string) => {
 
 // 👉 Image Validator
 export const imageValidator = (value: FileList) => {
-  if (!value || value.length === 0) return true
+  if (isEmpty(value)) return true
 
-  return value[0].size < 2000000 || 'Image size should be less than 2 MB'
+  return !value || !value.length || value[0].size < 2000000 || 'Image size should be less than 2 MB'
+}
+
+// 👉 General Date Comparison Validator
+export const compareDatesValidator = (
+  date1: Date | string,
+  date2: Date | string,
+  operator: '===' | '==' | '!==' | '!=' | '>' | '>=' | '<' | '<=',
+  date1Name = 'first',
+  date2Name = 'second',
+) => {
+  if (isEmpty(date1)) return true
+
+  const d1 = new Date(date1)
+  const d2 = new Date(date2)
+
+  const time1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate()).getTime()
+  const time2 = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate()).getTime()
+
+  const messages = {
+    '===': 'Dates must be exactly the same',
+    '==': 'Dates must be equal',
+    '!==': 'Dates must not be the same',
+    '!=': 'Dates must not be equal',
+    '>': `The ${date1Name} date must be later than the ${date2Name} date`,
+    '>=': `The ${date1Name} date must be the same or later than the ${date2Name} date`,
+    '<': `The ${date1Name} date must be earlier than the ${date2Name} date`,
+    '<=': `The ${date1Name} date must be the same or earlier than the ${date2Name} date`,
+  }
+
+  if (!(operator in messages)) return `Invalid operator: ${operator}`
+
+  const comparisons = {
+    '===': time1 === time2,
+    '==': time1 == time2,
+    '!==': time1 !== time2,
+    '!=': time1 != time2,
+    '>': time1 > time2,
+    '>=': time1 >= time2,
+    '<': time1 < time2,
+    '<=': time1 <= time2,
+  }
+
+  return comparisons[operator] || messages[operator]
 }
